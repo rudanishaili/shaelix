@@ -1,7 +1,10 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import API from "../utils/api"
 
 function Register() {
+  const navigate = useNavigate()
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -27,7 +30,11 @@ function Register() {
       localStorage.setItem("user", JSON.stringify(res.data.user))
 
       setMessage("Registration successful ✅")
-      console.log(res.data)
+
+      setTimeout(() => {
+        navigate("/dashboard")
+      }, 1000)
+
     } catch (error) {
       setMessage(error.response?.data?.message || "Something went wrong")
     }
@@ -79,7 +86,9 @@ function Register() {
         </button>
 
         {message && (
-          <p className="mt-4 text-center text-sm text-gray-300">{message}</p>
+          <p className="mt-4 text-center text-sm text-gray-300">
+            {message}
+          </p>
         )}
       </form>
     </div>
