@@ -16,6 +16,18 @@ function Analyzer() {
   const [chatLoading, setChatLoading] = useState(false)
   const [chatError, setChatError] = useState("")
 
+  const getYouTubeId = (url) => {
+    if (!url) return ""
+
+    if (url.includes("youtu.be/")) {
+      return url.split("youtu.be/")[1]?.split("?")[0]
+    }
+
+    return url.split("v=")[1]?.split("&")[0] || ""
+  }
+
+  const videoId = getYouTubeId(videoUrl)
+
   const handleAnalyze = async (e) => {
     e.preventDefault()
 
@@ -117,7 +129,8 @@ function Analyzer() {
     })
     .filter((card) => card.question && card.answer)
 
-  const quizSection = notes.split("## Quiz")[1] || ""
+  const quizSection =
+    notes.split("## Quiz")[1]?.split("## Mind Map")[0] || ""
 
   const quizQuestions = quizSection
     .split("Q:")
@@ -145,6 +158,8 @@ function Analyzer() {
     })
     .filter((quiz) => quiz.question && quiz.options.length > 0)
 
+  const mindMapSection = notes.split("## Mind Map")[1] || ""
+
   const cleanNotes = notes.split("## Flashcards")[0].trim()
 
   const getOptionLetter = (text) => {
@@ -170,6 +185,48 @@ function Analyzer() {
 
     return selectedLetter === correctLetter ? total + 1 : total
   }, 0)
+
+  const renderMindMap = (mindMapText) => {
+    const lines = mindMapText
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => line !== "")
+
+    if (lines.length === 0) {
+      return (
+        <p className="text-gray-400">
+          Mind map not available. Analyze a new video after updating the AI prompt.
+        </p>
+      )
+    }
+
+    return (
+      <div className="space-y-4">
+        {lines.map((line, index) => {
+          const isMain = line.toLowerCase().includes("main topic")
+          const isBranch = line.toLowerCase().includes("branch")
+          const isDetail = line.toLowerCase().includes("detail")
+
+          return (
+            <div
+              key={index}
+              className={`rounded-2xl border p-4 ${
+                isMain
+                  ? "border-[#FFD95A] bg-[#FFD95A]/10 text-[#FFD95A]"
+                  : isBranch
+                  ? "ml-6 border-[#FF5DA2] bg-[#FF5DA2]/10 text-[#FF9AC7]"
+                  : isDetail
+                  ? "ml-12 border-[#B388FF] bg-[#B388FF]/10 text-gray-300"
+                  : "border-white/10 bg-black/20 text-gray-300"
+              }`}
+            >
+              {line.replace("-", "").trim()}
+            </div>
+          )
+        })}
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-[#0F0F14] text-white px-8 py-6">
@@ -205,6 +262,26 @@ function Analyzer() {
 
       {notes && (
         <>
+          {videoId && (
+            <div className="mt-10 rounded-3xl border border-white/10 bg-white/[0.04] p-6">
+              <h2 className="mb-5 text-2xl font-bold text-[#FF5DA2]">
+                Video Preview
+              </h2>
+
+              <div className="aspect-video overflow-hidden rounded-2xl">
+                <iframe
+                  width="100%"
+                  height="100%"
+                  src={`https://www.youtube.com/embed/${videoId}`}
+                  title="YouTube video player"
+                  frameBorder="0"
+                  allowFullScreen
+                  className="rounded-2xl"
+                ></iframe>
+              </div>
+            </div>
+          )}
+
           <div className="mt-10 rounded-3xl border border-white/10 bg-white/[0.04] p-6">
             <h2 className="mb-5 text-2xl font-bold text-[#B388FF]">
               Generated Notes
@@ -221,17 +298,26 @@ function Analyzer() {
             </h2>
 
             <div className="grid gap-3">
-              {timestamps.map((item) => (
-                <div
-                  key={item._id}
-                  className="rounded-xl border border-white/10 bg-black/20 p-4"
-                >
-                  <span className="font-bold text-[#FFD95A]">
-                    {item.displayTime}
-                  </span>
-                  <p className="mt-2 text-gray-300">{item.text}</p>
-                </div>
-              ))}
+              {timestamps.length > 0 ? (
+                timestamps.map((item) => (
+                  <a
+                    key={item._id}
+                    href={`https://www.youtube.com/watch?v=${videoId}&t=${item.time}s`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="block rounded-xl border border-white/10 bg-black/20 p-4 transition-all duration-300 hover:border-[#FFD95A]"
+                  >
+                    <span className="font-bold text-[#FFD95A]">
+                      {item.displayTime}
+                    </span>
+                    <p className="mt-2 text-gray-300">{item.text}</p>
+                  </a>
+                ))
+              ) : (
+                <p className="text-gray-400">
+                  No timestamps available.
+                </p>
+              )}
             </div>
           </div>
 
@@ -241,29 +327,35 @@ function Analyzer() {
             </h2>
 
             <div className="grid gap-5 md:grid-cols-2">
-              {flashcards.map((card, index) => (
-                <div
-                  key={index}
-                  onClick={() => setOpenCard(openCard === index ? null : index)}
-                  className="cursor-pointer rounded-2xl border border-white/10 bg-black/20 p-6 transition-all duration-300 hover:border-[#FF5DA2]"
-                >
-                  <p className="font-bold text-[#FFD95A]">
-                    Q: {card.question}
-                  </p>
+              {flashcards.length > 0 ? (
+                flashcards.map((card, index) => (
+                  <div
+                    key={index}
+                    onClick={() => setOpenCard(openCard === index ? null : index)}
+                    className="cursor-pointer rounded-2xl border border-white/10 bg-black/20 p-6 transition-all duration-300 hover:border-[#FF5DA2]"
+                  >
+                    <p className="font-bold text-[#FFD95A]">
+                      Q: {card.question}
+                    </p>
 
-                  {openCard === index && (
-                    <div className="mt-4 border-t border-white/10 pt-4">
-                      <p className="text-gray-300">A: {card.answer}</p>
-                    </div>
-                  )}
+                    {openCard === index && (
+                      <div className="mt-4 border-t border-white/10 pt-4">
+                        <p className="text-gray-300">A: {card.answer}</p>
+                      </div>
+                    )}
 
-                  <p className="mt-4 text-sm text-gray-500">
-                    {openCard === index
-                      ? "Click to hide answer"
-                      : "Click to reveal answer"}
-                  </p>
-                </div>
-              ))}
+                    <p className="mt-4 text-sm text-gray-500">
+                      {openCard === index
+                        ? "Click to hide answer"
+                        : "Click to reveal answer"}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-400">
+                  No flashcards available.
+                </p>
+              )}
             </div>
           </div>
 
@@ -281,62 +373,76 @@ function Analyzer() {
             </div>
 
             <div className="grid gap-6">
-              {quizQuestions.map((quiz, quizIndex) => {
-                const selected = selectedAnswers[quizIndex]
-                const correctLetter = getOptionLetter(quiz.correctAnswer)
+              {quizQuestions.length > 0 ? (
+                quizQuestions.map((quiz, quizIndex) => {
+                  const selected = selectedAnswers[quizIndex]
+                  const correctLetter = getOptionLetter(quiz.correctAnswer)
 
-                return (
-                  <div
-                    key={quizIndex}
-                    className="rounded-2xl border border-white/10 bg-black/20 p-6"
-                  >
-                    <p className="font-bold text-white">
-                      Q{quizIndex + 1}. {quiz.question}
-                    </p>
-
-                    <div className="mt-5 grid gap-3">
-                      {quiz.options.map((option, optionIndex) => {
-                        const optionLetter = getOptionLetter(option)
-                        const isSelected = selected === option
-                        const isCorrect = optionLetter === correctLetter
-                        const showResult = Boolean(selected)
-
-                        let optionStyle =
-                          "border-white/10 bg-white/[0.04] hover:border-[#B388FF]"
-
-                        if (showResult && isCorrect) {
-                          optionStyle = "border-green-400 bg-green-400/10"
-                        }
-
-                        if (showResult && isSelected && !isCorrect) {
-                          optionStyle = "border-red-400 bg-red-400/10"
-                        }
-
-                        return (
-                          <button
-                            key={optionIndex}
-                            onClick={() => handleSelectAnswer(quizIndex, option)}
-                            disabled={Boolean(selected)}
-                            className={`rounded-xl border px-4 py-3 text-left transition-all duration-300 ${optionStyle}`}
-                          >
-                            {option}
-                          </button>
-                        )
-                      })}
-                    </div>
-
-                    {selected && (
-                      <p className="mt-4 text-sm text-gray-300">
-                        Correct Answer:{" "}
-                        <span className="font-bold text-[#FFD95A]">
-                          {quiz.correctAnswer}
-                        </span>
+                  return (
+                    <div
+                      key={quizIndex}
+                      className="rounded-2xl border border-white/10 bg-black/20 p-6"
+                    >
+                      <p className="font-bold text-white">
+                        Q{quizIndex + 1}. {quiz.question}
                       </p>
-                    )}
-                  </div>
-                )
-              })}
+
+                      <div className="mt-5 grid gap-3">
+                        {quiz.options.map((option, optionIndex) => {
+                          const optionLetter = getOptionLetter(option)
+                          const isSelected = selected === option
+                          const isCorrect = optionLetter === correctLetter
+                          const showResult = Boolean(selected)
+
+                          let optionStyle =
+                            "border-white/10 bg-white/[0.04] hover:border-[#B388FF]"
+
+                          if (showResult && isCorrect) {
+                            optionStyle = "border-green-400 bg-green-400/10"
+                          }
+
+                          if (showResult && isSelected && !isCorrect) {
+                            optionStyle = "border-red-400 bg-red-400/10"
+                          }
+
+                          return (
+                            <button
+                              key={optionIndex}
+                              onClick={() => handleSelectAnswer(quizIndex, option)}
+                              disabled={Boolean(selected)}
+                              className={`rounded-xl border px-4 py-3 text-left transition-all duration-300 ${optionStyle}`}
+                            >
+                              {option}
+                            </button>
+                          )
+                        })}
+                      </div>
+
+                      {selected && (
+                        <p className="mt-4 text-sm text-gray-300">
+                          Correct Answer:{" "}
+                          <span className="font-bold text-[#FFD95A]">
+                            {quiz.correctAnswer}
+                          </span>
+                        </p>
+                      )}
+                    </div>
+                  )
+                })
+              ) : (
+                <p className="text-gray-400">
+                  No quiz available.
+                </p>
+              )}
             </div>
+          </div>
+
+          <div className="mt-10 rounded-3xl border border-white/10 bg-white/[0.04] p-6">
+            <h2 className="mb-6 text-2xl font-bold text-[#B388FF]">
+              AI Mind Map
+            </h2>
+
+            {renderMindMap(mindMapSection)}
           </div>
 
           <div className="mt-10 rounded-3xl border border-white/10 bg-white/[0.04] p-6">
