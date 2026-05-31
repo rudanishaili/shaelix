@@ -2,23 +2,38 @@ import axios from "axios"
 
 export const generateNotes = async (transcript) => {
   const prompt = `
-You are Shaelix, an intelligent learning assistant.
+You are Shaelix, an intelligent AI learning assistant.
 
-Analyze this video transcript and create structured learning notes.
+Analyze the following video transcript and generate structured learning content.
 
-Return the answer in this format:
+Return the response ONLY in this format:
 
 ## Key Concepts
-- concept with short explanation
+- important concepts with short explanations
 
 ## Important Points
-- only important points, ignore filler
+- important learning points
 
 ## Revision Notes
 - quick revision bullets
 
 ## Interview Questions
-- question with short answer
+Q: question
+A: answer
+
+## Flashcards
+Q: question
+A: answer
+
+## Quiz
+Q: question
+Options:
+A)
+B)
+C)
+D)
+
+Correct Answer:
 
 Transcript:
 ${transcript}
@@ -27,7 +42,7 @@ ${transcript}
   const response = await axios.post(
     "https://openrouter.ai/api/v1/chat/completions",
     {
-      model: "google/gemini-2.0-flash-001",
+      model: "openai/gpt-4o-mini",
       messages: [
         {
           role: "user",

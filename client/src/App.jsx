@@ -6,6 +6,8 @@ import Register from "./pages/Register"
 import Dashboard from "./pages/Dashboard"
 import Analyzer from "./pages/Analyzer"
 import ProtectedRoute from "./components/common/ProtectedRoute"
+import History from "./pages/History"
+import AnalysisDetails from "./pages/AnalysisDetails"
 
 function App() {
   return (
@@ -16,6 +18,15 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<ProtectedRoute> <Dashboard /> </ProtectedRoute> } />
         <Route path="/analyzer" element={<ProtectedRoute> <Analyzer /> </ProtectedRoute> } />
+        <Route path="/history" element={<ProtectedRoute> <History /> </ProtectedRoute> } />
+        <Route
+  path="/analysis/:id"
+  element={
+    <ProtectedRoute>
+      <AnalysisDetails />
+    </ProtectedRoute>
+  }
+/>
       </Routes>
     </BrowserRouter>
   )
