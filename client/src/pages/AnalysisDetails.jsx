@@ -375,7 +375,7 @@ function AnalysisDetails() {
 
       <div className="mb-10 rounded-3xl border border-white/10 bg-white/[0.04] p-6">
         <h2 className="mb-5 text-2xl font-bold text-[#B388FF]">
-          Chat With This Vide
+          Chat With This Video
         </h2>
 
         <form onSubmit={handleAskQuestion} className="flex flex-col gap-4">
