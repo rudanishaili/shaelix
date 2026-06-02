@@ -4,12 +4,14 @@ export const generateNotes = async (transcript) => {
   const prompt = `
 You are Shaelix, an intelligent AI learning assistant.
 
-Analyze the following video transcript and generate structured learning content.
+Create clean, structured learning content from this video transcript.
 
-VERY IMPORTANT:
-You MUST include every section exactly with these headings.
-Do not skip any heading.
-Do not add extra headings.
+IMPORTANT RULES:
+- Use EXACT headings only.
+- Do not skip any heading.
+- Keep flashcards clean.
+- Quiz must have exactly 4 options.
+- Mind map must use Main Topic, Branch, Detail format.
 
 Return ONLY this format:
 
@@ -39,6 +41,9 @@ A: answer
 Q: question
 A: answer
 
+Q: question
+A: answer
+
 ## Quiz
 Q: question
 Options:
@@ -55,6 +60,14 @@ B) option
 C) option
 D) option
 Correct Answer: B) option
+
+Q: question
+Options:
+A) option
+B) option
+C) option
+D) option
+Correct Answer: C) option
 
 ## Mind Map
 Main Topic: video topic
@@ -76,12 +89,7 @@ ${transcript}
     "https://openrouter.ai/api/v1/chat/completions",
     {
       model: "openai/gpt-4o-mini",
-      messages: [
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
+      messages: [{ role: "user", content: prompt }],
     },
     {
       headers: {

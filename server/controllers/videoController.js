@@ -1,7 +1,7 @@
 import { YoutubeTranscript } from "youtube-transcript"
 import { generateNotes } from "../utils/openrouter.js"
-import Analysis from "../models/Analysis.js"
 import { askVideoQuestion } from "../utils/chatWithVideo.js"
+import Analysis from "../models/Analysis.js"
 
 const formatTime = (seconds) => {
   const mins = Math.floor(seconds / 60)
@@ -9,14 +9,17 @@ const formatTime = (seconds) => {
   return `${mins}:${secs.toString().padStart(2, "0")}`
 }
 
+const countSectionItems = (text, start, end) => {
+  const section = text.split(start)[1]?.split(end)[0] || ""
+  return section.split("Q:").filter((item) => item.trim() !== "").length
+}
+
 export const getTranscript = async (req, res) => {
   try {
     const { videoUrl } = req.body
 
     if (!videoUrl) {
-      return res.status(400).json({
-        message: "Video URL is required",
-      })
+      return res.status(400).json({ message: "Video URL is required" })
     }
 
     const transcriptArray = await YoutubeTranscript.fetchTranscript(videoUrl)
@@ -60,9 +63,9 @@ export const getTranscript = async (req, res) => {
 
 export const getUserAnalyses = async (req, res) => {
   try {
-    const analyses = await Analysis.find({
-      userId: req.user._id,
-    }).sort({ createdAt: -1 })
+    const analyses = await Analysis.find({ userId: req.user._id }).sort({
+      createdAt: -1,
+    })
 
     res.status(200).json(analyses)
   } catch (error) {
@@ -81,9 +84,7 @@ export const getSingleAnalysis = async (req, res) => {
     })
 
     if (!analysis) {
-      return res.status(404).json({
-        message: "Analysis not found",
-      })
+      return res.status(404).json({ message: "Analysis not found" })
     }
 
     res.status(200).json(analysis)
@@ -105,22 +106,71 @@ export const chatWithVideo = async (req, res) => {
     })
 
     if (!analysis) {
-      return res.status(404).json({
-        message: "Analysis not found",
+      return res.status(404).json({ message: "Analysis not found" })
+    }
+
+    if (!analysis.transcript) {
+      return res.status(400).json({
+        message:
+          "Transcript not available for this old analysis. Please analyze the video again.",
       })
     }
 
-    const answer = await askVideoQuestion(
-      analysis.transcript,
-      question
-    )
+    const answer = await askVideoQuestion(analysis.transcript, question)
 
-    res.status(200).json({
-      answer,
-    })
+    res.status(200).json({ answer })
   } catch (error) {
     res.status(500).json({
       message: "Failed to chat with video",
+      error: error.message,
+    })
+  }
+}
+
+export const deleteAnalysis = async (req, res) => {
+  try {
+    const analysis = await Analysis.findOneAndDelete({
+      _id: req.params.id,
+      userId: req.user._id,
+    })
+
+    if (!analysis) {
+      return res.status(404).json({ message: "Analysis not found" })
+    }
+
+    res.status(200).json({ message: "Analysis deleted successfully" })
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to delete analysis",
+      error: error.message,
+    })
+  }
+}
+
+export const getDashboardStats = async (req, res) => {
+  try {
+    const analyses = await Analysis.find({ userId: req.user._id }).sort({
+      createdAt: -1,
+    })
+
+    const totalFlashcards = analyses.reduce((total, item) => {
+      return total + countSectionItems(item.notes, "## Flashcards", "## Quiz")
+    }, 0)
+
+    const totalQuizzes = analyses.reduce((total, item) => {
+      return total + countSectionItems(item.notes, "## Quiz", "## Mind Map")
+    }, 0)
+
+    res.status(200).json({
+      savedVideos: analyses.length,
+      totalFlashcards,
+      totalQuizzes,
+      averageQuizScore: 0,
+      recentAnalyses: analyses.slice(0, 3),
+    })
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to fetch dashboard stats",
       error: error.message,
     })
   }
