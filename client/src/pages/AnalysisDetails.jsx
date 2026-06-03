@@ -14,6 +14,7 @@ function AnalysisDetails() {
   const [answer, setAnswer] = useState("")
   const [chatLoading, setChatLoading] = useState(false)
   const [chatError, setChatError] = useState("")
+  const [scoreSaved, setScoreSaved] = useState(false)
 
   const fetchAnalysis = async () => {
     try {
@@ -248,6 +249,31 @@ ${analysis.timestamps
     )
   }
 
+  const saveScore = async () => {
+  try {
+    const token = localStorage.getItem("token")
+
+    await API.post(
+      `/videos/${id}/quiz-score`,
+      {
+        score,
+        total: quizQuestions.length,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+
+    setScoreSaved(true)
+    alert("Quiz score saved ✅")
+  } catch (error) {
+    console.log(error)
+    alert("Failed to save quiz score")
+  }
+}
+
   const tabs = [
     { id: "notes", label: "Notes" },
     { id: "timestamps", label: "Timestamps" },
@@ -389,11 +415,25 @@ ${analysis.timestamps
               Quiz Mode
             </h2>
 
-            <p className="rounded-xl border border-white/10 bg-black/20 px-4 py-2 text-sm">
-              Score:{" "}
-              <span className="text-[#FFD95A] font-bold">{score}</span> /{" "}
-              {quizQuestions.length}
-            </p>
+            <div className="flex items-center gap-3">
+  <p className="rounded-xl border border-white/10 bg-black/20 px-4 py-2 text-sm">
+    Score:{" "}
+    <span className="text-[#FFD95A] font-bold">{score}</span> /{" "}
+    {quizQuestions.length}
+  </p>
+
+  <button
+    onClick={saveScore}
+    disabled={
+      quizQuestions.length === 0 ||
+      Object.keys(selectedAnswers).length === 0 ||
+      scoreSaved
+    }
+    className="rounded-xl border border-white/10 px-4 py-2 text-sm text-[#FFD95A] hover:border-[#FFD95A] disabled:opacity-50"
+  >
+    {scoreSaved ? "Score Saved" : "Save Score"}
+  </button>
+</div>
           </div>
 
           <div className="grid gap-6">

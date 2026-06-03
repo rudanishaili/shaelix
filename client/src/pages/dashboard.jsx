@@ -47,12 +47,21 @@ function Dashboard() {
           Shaelix
         </h1>
 
-        <button
-          onClick={handleLogout}
-          className="rounded-xl border border-white/10 px-5 py-2 hover:border-[#FF5DA2]"
-        >
-          Logout
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={fetchStats}
+            className="rounded-xl border border-white/10 px-5 py-2 hover:border-[#B388FF]"
+          >
+            Refresh Stats
+          </button>
+
+          <button
+            onClick={handleLogout}
+            className="rounded-xl border border-white/10 px-5 py-2 hover:border-[#FF5DA2]"
+          >
+            Logout
+          </button>
+        </div>
       </nav>
 
       <section className="mt-12">
@@ -89,7 +98,7 @@ function Dashboard() {
         </div>
       </section>
 
-      <section className="mt-14 grid gap-6 md:grid-cols-4">
+      <section className="mt-14 grid gap-6 md:grid-cols-3">
         <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6">
           <h3 className="text-lg font-bold">Saved Videos</h3>
           <p className="mt-3 text-4xl font-bold text-[#B388FF]">
@@ -111,12 +120,6 @@ function Dashboard() {
           </p>
         </div>
 
-        <div className="rounded-3xl border border-white/10 bg-white/[0.04] p-6">
-          <h3 className="text-lg font-bold">Avg Score</h3>
-          <p className="mt-3 text-4xl font-bold text-green-400">
-            {stats.averageQuizScore}%
-          </p>
-        </div>
       </section>
 
       <section className="mt-14">

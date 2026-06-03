@@ -1,1 +1,141 @@
 @import "tailwindcss";
+
+.aurora-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #02110d;
+}
+
+.aurora {
+  position: absolute;
+  width: 180%;
+  height: 220px;
+  border-radius: 50%;
+  filter: blur(55px);
+  opacity: 0.55;
+  mix-blend-mode: screen;
+}
+
+.aurora-one {
+  top: 8%;
+  left: -30%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 255, 170, 0.9),
+    rgba(120, 255, 200, 0.4),
+    transparent
+  );
+
+  transform: rotate(-8deg);
+
+  animation: waveOne 14s ease-in-out infinite alternate;
+}
+
+.aurora-two {
+  top: 20%;
+  left: -20%;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(179, 136, 255, 0.7),
+    rgba(255, 93, 162, 0.5),
+    transparent
+  );
+
+  transform: rotate(7deg);
+
+  animation: waveTwo 18s ease-in-out infinite alternate;
+}
+
+.aurora-three {
+  top: 38%;
+  left: -35%;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 255, 178, 0.55),
+    rgba(255, 217, 90, 0.22),
+    transparent
+  );
+
+  transform: rotate(-5deg);
+
+  animation: waveThree 20s ease-in-out infinite alternate;
+}
+
+.aurora-four {
+  top: 60%;
+  left: -25%;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 255, 140, 0.25),
+    rgba(179, 136, 255, 0.2),
+    transparent
+  );
+
+  transform: rotate(10deg);
+
+  animation: waveFour 24s ease-in-out infinite alternate;
+}
+
+@keyframes waveOne {
+  0% {
+    transform: translateX(0) rotate(-8deg) scaleY(1);
+  }
+
+  50% {
+    transform: translateX(80px) rotate(-5deg) scaleY(1.2);
+  }
+
+  100% {
+    transform: translateX(-40px) rotate(-10deg) scaleY(0.9);
+  }
+}
+
+@keyframes waveTwo {
+  0% {
+    transform: translateX(0) rotate(7deg) scaleY(1);
+  }
+
+  50% {
+    transform: translateX(-120px) rotate(10deg) scaleY(1.15);
+  }
+
+  100% {
+    transform: translateX(60px) rotate(4deg) scaleY(0.95);
+  }
+}
+
+@keyframes waveThree {
+  0% {
+    transform: translateX(0) rotate(-5deg) scaleY(1);
+  }
+
+  50% {
+    transform: translateX(100px) rotate(-2deg) scaleY(1.1);
+  }
+
+  100% {
+    transform: translateX(-70px) rotate(-8deg) scaleY(0.92);
+  }
+}
+
+@keyframes waveFour {
+  0% {
+    transform: translateX(0) rotate(10deg) scaleY(1);
+  }
+
+  50% {
+    transform: translateX(-90px) rotate(14deg) scaleY(1.18);
+  }
+
+  100% {
+    transform: translateX(50px) rotate(8deg) scaleY(0.95);
+  }
+}

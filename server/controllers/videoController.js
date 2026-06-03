@@ -161,16 +161,69 @@ export const getDashboardStats = async (req, res) => {
       return total + countSectionItems(item.notes, "## Quiz", "## Mind Map")
     }, 0)
 
+    const scoredAnalyses = analyses.filter(
+  (item) => item.quizTotal && item.quizTotal > 0
+)
+
+const averageQuizScore =
+  scoredAnalyses.length > 0
+    ? Math.round(
+        scoredAnalyses.reduce(
+          (sum, item) => sum + (item.quizPercentage || 0),
+          0
+        ) / scoredAnalyses.length
+      )
+    : 0
+
     res.status(200).json({
-      savedVideos: analyses.length,
-      totalFlashcards,
-      totalQuizzes,
-      averageQuizScore: 0,
-      recentAnalyses: analyses.slice(0, 3),
-    })
+  savedVideos: analyses.length,
+  totalFlashcards,
+  totalQuizzes,
+  averageQuizScore,
+  recentAnalyses: analyses.slice(0, 3),
+})
   } catch (error) {
     res.status(500).json({
       message: "Failed to fetch dashboard stats",
+      error: error.message,
+    })
+  }
+}
+
+export const saveQuizScore = async (req, res) => {
+  try {
+    const { score, total } = req.body
+
+    const percentage = total > 0 ? Math.round((score / total) * 100) : 0
+
+    const analysis = await Analysis.findOneAndUpdate(
+      {
+        _id: req.params.id,
+        userId: req.user._id,
+      },
+      {
+        quizScore: score,
+        quizTotal: total,
+        quizPercentage: percentage,
+      },
+      {
+        new: true,
+      }
+    )
+
+    if (!analysis) {
+      return res.status(404).json({
+        message: "Analysis not found",
+      })
+    }
+
+    res.status(200).json({
+      message: "Quiz score saved",
+      analysis,
+    })
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to save quiz score",
       error: error.message,
     })
   }

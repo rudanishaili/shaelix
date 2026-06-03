@@ -8,9 +8,9 @@ function Analyzer() {
   const [timestamps, setTimestamps] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const [activeTab, setActiveTab] = useState("video")
   const [openCard, setOpenCard] = useState(null)
   const [selectedAnswers, setSelectedAnswers] = useState({})
-
   const [question, setQuestion] = useState("")
   const [answer, setAnswer] = useState("")
   const [chatLoading, setChatLoading] = useState(false)
@@ -18,11 +18,7 @@ function Analyzer() {
 
   const getYouTubeId = (url) => {
     if (!url) return ""
-
-    if (url.includes("youtu.be/")) {
-      return url.split("youtu.be/")[1]?.split("?")[0]
-    }
-
+    if (url.includes("youtu.be/")) return url.split("youtu.be/")[1]?.split("?")[0]
     return url.split("v=")[1]?.split("&")[0] || ""
   }
 
@@ -30,7 +26,6 @@ function Analyzer() {
 
   const handleAnalyze = async (e) => {
     e.preventDefault()
-
     setError("")
     setNotes("")
     setTimestamps([])
@@ -40,6 +35,7 @@ function Analyzer() {
     setQuestion("")
     setAnswer("")
     setChatError("")
+    setActiveTab("video")
 
     if (!videoUrl.trim()) {
       setError("Please enter a YouTube URL")
@@ -48,17 +44,12 @@ function Analyzer() {
 
     try {
       setLoading(true)
-
       const token = localStorage.getItem("token")
 
       const res = await API.post(
         "/videos/transcript",
         { videoUrl },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       )
 
       setAnalysisId(res.data.analysis._id)
@@ -74,7 +65,6 @@ function Analyzer() {
 
   const handleAskQuestion = async (e) => {
     e.preventDefault()
-
     setAnswer("")
     setChatError("")
 
@@ -90,25 +80,18 @@ function Analyzer() {
 
     try {
       setChatLoading(true)
-
       const token = localStorage.getItem("token")
 
       const res = await API.post(
         `/videos/${analysisId}/chat`,
         { question },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       )
 
       setAnswer(res.data.answer)
     } catch (error) {
       console.log(error)
-      setChatError(
-        error.response?.data?.message || "Failed to chat with video"
-      )
+      setChatError(error.response?.data?.message || "Failed to chat with video")
     } finally {
       setChatLoading(false)
     }
@@ -129,8 +112,7 @@ function Analyzer() {
     })
     .filter((card) => card.question && card.answer)
 
-  const quizSection =
-    notes.split("## Quiz")[1]?.split("## Mind Map")[0] || ""
+  const quizSection = notes.split("## Quiz")[1]?.split("## Mind Map")[0] || ""
 
   const quizQuestions = quizSection
     .split("Q:")
@@ -159,12 +141,9 @@ function Analyzer() {
     .filter((quiz) => quiz.question && quiz.options.length > 0)
 
   const mindMapSection = notes.split("## Mind Map")[1] || ""
-
   const cleanNotes = notes.split("## Flashcards")[0].trim()
 
-  const getOptionLetter = (text) => {
-    return text?.trim()?.charAt(0)?.toUpperCase()
-  }
+  const getOptionLetter = (text) => text?.trim()?.charAt(0)?.toUpperCase()
 
   const handleSelectAnswer = (quizIndex, option) => {
     if (selectedAnswers[quizIndex]) return
@@ -177,14 +156,17 @@ function Analyzer() {
 
   const score = quizQuestions.reduce((total, quiz, index) => {
     const selected = selectedAnswers[index]
-
     if (!selected) return total
 
-    const selectedLetter = getOptionLetter(selected)
-    const correctLetter = getOptionLetter(quiz.correctAnswer)
-
-    return selectedLetter === correctLetter ? total + 1 : total
+    return getOptionLetter(selected) === getOptionLetter(quiz.correctAnswer)
+      ? total + 1
+      : total
   }, 0)
+
+  const copyNotes = async () => {
+    await navigator.clipboard.writeText(notes)
+    alert("Notes copied ✅")
+  }
 
   const renderMindMap = (mindMapText) => {
     const lines = mindMapText
@@ -193,11 +175,7 @@ function Analyzer() {
       .filter((line) => line !== "")
 
     if (lines.length === 0) {
-      return (
-        <p className="text-gray-400">
-          Mind map not available. Analyze a new video after updating the AI prompt.
-        </p>
-      )
+      return <p className="text-gray-400">Mind map not available.</p>
     }
 
     return (
@@ -228,6 +206,16 @@ function Analyzer() {
     )
   }
 
+  const tabs = [
+    { id: "video", label: "Video" },
+    { id: "notes", label: "Notes" },
+    { id: "timestamps", label: "Timestamps" },
+    { id: "flashcards", label: "Flashcards" },
+    { id: "quiz", label: "Quiz" },
+    { id: "mindmap", label: "Mind Map" },
+    { id: "chat", label: "Chat" },
+  ]
+
   return (
     <div className="min-h-screen bg-[#0F0F14] text-white px-8 py-6">
       <h1 className="text-4xl font-bold mb-8 bg-gradient-to-r from-[#B388FF] via-[#FF5DA2] to-[#FFD95A] bg-clip-text text-transparent">
@@ -254,7 +242,7 @@ function Analyzer() {
 
       {loading && (
         <div className="mt-8 rounded-3xl border border-white/10 bg-white/[0.04] p-6 text-gray-300">
-          Shaelix is reading the transcript and extracting important learning points...
+          Shaelix is reading the transcript and building your learning system...
         </div>
       )}
 
@@ -262,220 +250,253 @@ function Analyzer() {
 
       {notes && (
         <>
-          {videoId && (
-            <div className="mt-10 rounded-3xl border border-white/10 bg-white/[0.04] p-6">
+          <div className="mt-10 flex flex-wrap gap-3 rounded-3xl border border-white/10 bg-white/[0.04] p-3">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`rounded-2xl px-5 py-3 text-sm font-semibold transition-all ${
+                  activeTab === tab.id
+                    ? "bg-gradient-to-r from-[#B388FF] via-[#FF5DA2] to-[#FFD95A] text-black"
+                    : "border border-white/10 text-gray-300 hover:border-[#B388FF]"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {activeTab === "video" && (
+            <div className="mt-8 rounded-3xl border border-white/10 bg-white/[0.04] p-6">
               <h2 className="mb-5 text-2xl font-bold text-[#FF5DA2]">
                 Video Preview
               </h2>
 
-              <div className="aspect-video overflow-hidden rounded-2xl">
-                <iframe
-                  width="100%"
-                  height="100%"
-                  src={`https://www.youtube.com/embed/${videoId}`}
-                  title="YouTube video player"
-                  frameBorder="0"
-                  allowFullScreen
-                  className="rounded-2xl"
-                ></iframe>
+              {videoId ? (
+                <div className="aspect-video overflow-hidden rounded-2xl">
+                  <iframe
+                    width="100%"
+                    height="100%"
+                    src={`https://www.youtube.com/embed/${videoId}`}
+                    title="YouTube video player"
+                    frameBorder="0"
+                    allowFullScreen
+                    className="rounded-2xl"
+                  ></iframe>
+                </div>
+              ) : (
+                <p className="text-gray-400">Invalid YouTube URL.</p>
+              )}
+            </div>
+          )}
+
+          {activeTab === "notes" && (
+            <div className="mt-8 rounded-3xl border border-white/10 bg-white/[0.04] p-6">
+              <div className="mb-5 flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-[#B388FF]">
+                  Generated Notes
+                </h2>
+
+                <button
+                  onClick={copyNotes}
+                  className="rounded-xl border border-white/10 px-4 py-2 text-sm text-[#B388FF] hover:border-[#B388FF]"
+                >
+                  Copy Notes
+                </button>
+              </div>
+
+              <pre className="whitespace-pre-wrap text-gray-300">
+                {cleanNotes}
+              </pre>
+            </div>
+          )}
+
+          {activeTab === "timestamps" && (
+            <div className="mt-8 rounded-3xl border border-white/10 bg-white/[0.04] p-6">
+              <h2 className="mb-5 text-2xl font-bold text-[#B388FF]">
+                Timestamps
+              </h2>
+
+              <div className="grid gap-3">
+                {timestamps.length > 0 ? (
+                  timestamps.map((item) => (
+                    <a
+                      key={item._id}
+                      href={`https://www.youtube.com/watch?v=${videoId}&t=${item.time}s`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="block rounded-xl border border-white/10 bg-black/20 p-4 transition-all hover:border-[#FFD95A]"
+                    >
+                      <span className="font-bold text-[#FFD95A]">
+                        {item.displayTime}
+                      </span>
+
+                      <p className="mt-2 text-gray-300">{item.text}</p>
+                    </a>
+                  ))
+                ) : (
+                  <p className="text-gray-400">No timestamps available.</p>
+                )}
               </div>
             </div>
           )}
 
-          <div className="mt-10 rounded-3xl border border-white/10 bg-white/[0.04] p-6">
-            <h2 className="mb-5 text-2xl font-bold text-[#B388FF]">
-              Generated Notes
-            </h2>
-
-            <pre className="whitespace-pre-wrap text-gray-300">
-              {cleanNotes}
-            </pre>
-          </div>
-
-          <div className="mt-10 rounded-3xl border border-white/10 bg-white/[0.04] p-6">
-            <h2 className="mb-5 text-2xl font-bold text-[#B388FF]">
-              Timestamps
-            </h2>
-
-            <div className="grid gap-3">
-              {timestamps.length > 0 ? (
-                timestamps.map((item) => (
-                  <a
-                    key={item._id}
-                    href={`https://www.youtube.com/watch?v=${videoId}&t=${item.time}s`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="block rounded-xl border border-white/10 bg-black/20 p-4 transition-all duration-300 hover:border-[#FFD95A]"
-                  >
-                    <span className="font-bold text-[#FFD95A]">
-                      {item.displayTime}
-                    </span>
-                    <p className="mt-2 text-gray-300">{item.text}</p>
-                  </a>
-                ))
-              ) : (
-                <p className="text-gray-400">
-                  No timestamps available.
-                </p>
-              )}
-            </div>
-          </div>
-
-          <div className="mt-10 rounded-3xl border border-white/10 bg-white/[0.04] p-6">
-            <h2 className="mb-6 text-2xl font-bold text-[#FF5DA2]">
-              Flashcards
-            </h2>
-
-            <div className="grid gap-5 md:grid-cols-2">
-              {flashcards.length > 0 ? (
-                flashcards.map((card, index) => (
-                  <div
-                    key={index}
-                    onClick={() => setOpenCard(openCard === index ? null : index)}
-                    className="cursor-pointer rounded-2xl border border-white/10 bg-black/20 p-6 transition-all duration-300 hover:border-[#FF5DA2]"
-                  >
-                    <p className="font-bold text-[#FFD95A]">
-                      Q: {card.question}
-                    </p>
-
-                    {openCard === index && (
-                      <div className="mt-4 border-t border-white/10 pt-4">
-                        <p className="text-gray-300">A: {card.answer}</p>
-                      </div>
-                    )}
-
-                    <p className="mt-4 text-sm text-gray-500">
-                      {openCard === index
-                        ? "Click to hide answer"
-                        : "Click to reveal answer"}
-                    </p>
-                  </div>
-                ))
-              ) : (
-                <p className="text-gray-400">
-                  No flashcards available.
-                </p>
-              )}
-            </div>
-          </div>
-
-          <div className="mt-10 rounded-3xl border border-white/10 bg-white/[0.04] p-6">
-            <div className="mb-6 flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-[#FFD95A]">
-                Quiz Mode
+          {activeTab === "flashcards" && (
+            <div className="mt-8 rounded-3xl border border-white/10 bg-white/[0.04] p-6">
+              <h2 className="mb-6 text-2xl font-bold text-[#FF5DA2]">
+                Flashcards
               </h2>
 
-              <p className="rounded-xl border border-white/10 bg-black/20 px-4 py-2 text-sm">
-                Score:{" "}
-                <span className="text-[#FFD95A] font-bold">{score}</span> /{" "}
-                {quizQuestions.length}
-              </p>
-            </div>
-
-            <div className="grid gap-6">
-              {quizQuestions.length > 0 ? (
-                quizQuestions.map((quiz, quizIndex) => {
-                  const selected = selectedAnswers[quizIndex]
-                  const correctLetter = getOptionLetter(quiz.correctAnswer)
-
-                  return (
+              <div className="grid gap-5 md:grid-cols-2">
+                {flashcards.length > 0 ? (
+                  flashcards.map((card, index) => (
                     <div
-                      key={quizIndex}
-                      className="rounded-2xl border border-white/10 bg-black/20 p-6"
+                      key={index}
+                      onClick={() =>
+                        setOpenCard(openCard === index ? null : index)
+                      }
+                      className="cursor-pointer rounded-2xl border border-white/10 bg-black/20 p-6 hover:border-[#FF5DA2]"
                     >
-                      <p className="font-bold text-white">
-                        Q{quizIndex + 1}. {quiz.question}
+                      <p className="font-bold text-[#FFD95A]">
+                        Q: {card.question}
                       </p>
 
-                      <div className="mt-5 grid gap-3">
-                        {quiz.options.map((option, optionIndex) => {
-                          const optionLetter = getOptionLetter(option)
-                          const isSelected = selected === option
-                          const isCorrect = optionLetter === correctLetter
-                          const showResult = Boolean(selected)
-
-                          let optionStyle =
-                            "border-white/10 bg-white/[0.04] hover:border-[#B388FF]"
-
-                          if (showResult && isCorrect) {
-                            optionStyle = "border-green-400 bg-green-400/10"
-                          }
-
-                          if (showResult && isSelected && !isCorrect) {
-                            optionStyle = "border-red-400 bg-red-400/10"
-                          }
-
-                          return (
-                            <button
-                              key={optionIndex}
-                              onClick={() => handleSelectAnswer(quizIndex, option)}
-                              disabled={Boolean(selected)}
-                              className={`rounded-xl border px-4 py-3 text-left transition-all duration-300 ${optionStyle}`}
-                            >
-                              {option}
-                            </button>
-                          )
-                        })}
-                      </div>
-
-                      {selected && (
-                        <p className="mt-4 text-sm text-gray-300">
-                          Correct Answer:{" "}
-                          <span className="font-bold text-[#FFD95A]">
-                            {quiz.correctAnswer}
-                          </span>
-                        </p>
+                      {openCard === index && (
+                        <div className="mt-4 border-t border-white/10 pt-4">
+                          <p className="text-gray-300">A: {card.answer}</p>
+                        </div>
                       )}
+
+                      <p className="mt-4 text-sm text-gray-500">
+                        {openCard === index
+                          ? "Click to hide answer"
+                          : "Click to reveal answer"}
+                      </p>
                     </div>
-                  )
-                })
-              ) : (
-                <p className="text-gray-400">
-                  No quiz available.
+                  ))
+                ) : (
+                  <p className="text-gray-400">No flashcards available.</p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {activeTab === "quiz" && (
+            <div className="mt-8 rounded-3xl border border-white/10 bg-white/[0.04] p-6">
+              <div className="mb-6 flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-[#FFD95A]">
+                  Quiz Mode
+                </h2>
+
+                <p className="rounded-xl border border-white/10 bg-black/20 px-4 py-2 text-sm">
+                  Score:{" "}
+                  <span className="text-[#FFD95A] font-bold">{score}</span> /{" "}
+                  {quizQuestions.length}
                 </p>
+              </div>
+
+              <div className="grid gap-6">
+                {quizQuestions.length > 0 ? (
+                  quizQuestions.map((quiz, quizIndex) => {
+                    const selected = selectedAnswers[quizIndex]
+                    const correctLetter = getOptionLetter(quiz.correctAnswer)
+
+                    return (
+                      <div
+                        key={quizIndex}
+                        className="rounded-2xl border border-white/10 bg-black/20 p-6"
+                      >
+                        <p className="font-bold text-white">
+                          Q{quizIndex + 1}. {quiz.question}
+                        </p>
+
+                        <div className="mt-5 grid gap-3">
+                          {quiz.options.map((option, optionIndex) => {
+                            const optionLetter = getOptionLetter(option)
+                            const isSelected = selected === option
+                            const isCorrect = optionLetter === correctLetter
+                            const showResult = Boolean(selected)
+
+                            let optionStyle =
+                              "border-white/10 bg-white/[0.04] hover:border-[#B388FF]"
+
+                            if (showResult && isCorrect) {
+                              optionStyle = "border-green-400 bg-green-400/10"
+                            }
+
+                            if (showResult && isSelected && !isCorrect) {
+                              optionStyle = "border-red-400 bg-red-400/10"
+                            }
+
+                            return (
+                              <button
+                                key={optionIndex}
+                                onClick={() =>
+                                  handleSelectAnswer(quizIndex, option)
+                                }
+                                disabled={Boolean(selected)}
+                                className={`rounded-xl border px-4 py-3 text-left ${optionStyle}`}
+                              >
+                                {option}
+                              </button>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    )
+                  })
+                ) : (
+                  <p className="text-gray-400">No quiz available.</p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {activeTab === "mindmap" && (
+            <div className="mt-8 rounded-3xl border border-white/10 bg-white/[0.04] p-6">
+              <h2 className="mb-6 text-2xl font-bold text-[#B388FF]">
+                AI Mind Map
+              </h2>
+
+              {renderMindMap(mindMapSection)}
+            </div>
+          )}
+
+          {activeTab === "chat" && (
+            <div className="mt-8 rounded-3xl border border-white/10 bg-white/[0.04] p-6">
+              <h2 className="mb-5 text-2xl font-bold text-[#B388FF]">
+                Chat With This Video
+              </h2>
+
+              <form onSubmit={handleAskQuestion} className="flex flex-col gap-4">
+                <input
+                  type="text"
+                  placeholder="Ask anything from this video..."
+                  value={question}
+                  onChange={(e) => setQuestion(e.target.value)}
+                  className="rounded-xl border border-white/10 bg-black/20 px-5 py-4 outline-none focus:border-[#B388FF]"
+                />
+
+                <button
+                  disabled={chatLoading}
+                  className="rounded-xl bg-gradient-to-r from-[#B388FF] via-[#FF5DA2] to-[#FFD95A] px-6 py-4 font-bold text-black disabled:opacity-50"
+                >
+                  {chatLoading ? "Thinking..." : "Ask Shaelix"}
+                </button>
+              </form>
+
+              {chatError && <p className="mt-4 text-red-400">{chatError}</p>}
+
+              {answer && (
+                <div className="mt-6 rounded-2xl border border-white/10 bg-black/20 p-5">
+                  <p className="text-sm text-gray-400">Shaelix Answer</p>
+                  <p className="mt-3 text-gray-200 leading-relaxed">
+                    {answer}
+                  </p>
+                </div>
               )}
             </div>
-          </div>
-
-          <div className="mt-10 rounded-3xl border border-white/10 bg-white/[0.04] p-6">
-            <h2 className="mb-6 text-2xl font-bold text-[#B388FF]">
-              AI Mind Map
-            </h2>
-
-            {renderMindMap(mindMapSection)}
-          </div>
-
-          <div className="mt-10 rounded-3xl border border-white/10 bg-white/[0.04] p-6">
-            <h2 className="mb-5 text-2xl font-bold text-[#B388FF]">
-              Chat With This Video
-            </h2>
-
-            <form onSubmit={handleAskQuestion} className="flex flex-col gap-4">
-              <input
-                type="text"
-                placeholder="Ask anything from this video..."
-                value={question}
-                onChange={(e) => setQuestion(e.target.value)}
-                className="rounded-xl border border-white/10 bg-black/20 px-5 py-4 outline-none focus:border-[#B388FF]"
-              />
-
-              <button
-                disabled={chatLoading}
-                className="rounded-xl bg-gradient-to-r from-[#B388FF] via-[#FF5DA2] to-[#FFD95A] px-6 py-4 font-bold text-black disabled:opacity-50"
-              >
-                {chatLoading ? "Thinking..." : "Ask Shaelix"}
-              </button>
-            </form>
-
-            {chatError && <p className="mt-4 text-red-400">{chatError}</p>}
-
-            {answer && (
-              <div className="mt-6 rounded-2xl border border-white/10 bg-black/20 p-5">
-                <p className="text-sm text-gray-400">Shaelix Answer</p>
-                <p className="mt-3 text-gray-200 leading-relaxed">{answer}</p>
-              </div>
-            )}
-          </div>
+          )}
         </>
       )}
     </div>

@@ -30,6 +30,21 @@ const analysisSchema = new mongoose.Schema(
         text: String,
       },
     ],
+
+    quizScore: {
+      type: Number,
+      default: 0,
+    },
+
+    quizTotal: {
+      type: Number,
+      default: 0,
+    },
+
+    quizPercentage: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,
