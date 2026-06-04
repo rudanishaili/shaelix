@@ -192,3 +192,17 @@
     filter: hue-rotate(0deg);
   }
 }
+
+@keyframes gradientText {
+  0% {
+    filter: hue-rotate(0deg);
+  }
+
+  50% {
+    filter: hue-rotate(18deg);
+  }
+
+  100% {
+    filter: hue-rotate(0deg);
+  }
+}
