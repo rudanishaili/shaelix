@@ -49,141 +49,176 @@ function Register() {
   return (
     <div className="relative min-h-screen overflow-hidden bg-black text-white">
       <div
-        className="absolute inset-0 scale-110 bg-cover bg-center animate-[slowZoom_28s_ease-in-out_infinite_alternate]"
+        className="absolute inset-0 scale-105 bg-cover bg-center"
         style={{ backgroundImage: `url(${auroraBg})` }}
       />
 
-      <div className="absolute inset-0 bg-black/50" />
-      <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-[#02110D]/25 to-black/45" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_50%,rgba(255,255,255,0.08),transparent_28%)]" />
+      <div className="absolute inset-0 bg-black/35" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/45 via-black/10 to-black/45" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.025)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.025)_1px,transparent_1px)] bg-[size:72px_72px] opacity-25" />
 
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:72px_72px] opacity-20" />
-
-      <div className="pointer-events-none absolute left-16 top-20 h-32 w-32 rounded-full bg-white/10 blur-3xl animate-[floatGlow_8s_ease-in-out_infinite]" />
-      <div className="pointer-events-none absolute right-28 bottom-20 h-40 w-40 rounded-full bg-[#FFD95A]/20 blur-3xl animate-[floatGlow_10s_ease-in-out_infinite]" />
-      <div className="pointer-events-none absolute left-1/2 top-1/3 h-36 w-36 rounded-full bg-[#FF5DA2]/15 blur-3xl animate-[floatGlow_12s_ease-in-out_infinite]" />
-
-      <main className="relative z-10 grid min-h-screen items-center gap-14 px-6 py-10 lg:grid-cols-[1.1fr_1fr] lg:px-20">
-        <section className="animate-[fadeSlideUp_900ms_ease-out]">
+      <main className="relative z-10 grid min-h-screen items-center gap-16 px-8 py-10 lg:grid-cols-[1fr_1fr] lg:px-20">
+        <section className="max-w-3xl">
           <Link
             to="/"
-            className="inline-flex items-center rounded-full border border-white/20 bg-white/[0.10] px-4 py-2 text-sm text-white/90 shadow-lg shadow-black/20 backdrop-blur-2xl transition-all duration-300 hover:scale-105 hover:border-[#B388FF]/70 hover:bg-white/[0.16]"
+            className="inline-flex items-center rounded-full border border-white/25 bg-black/25 px-5 py-2 text-sm text-white/90 shadow-lg shadow-black/30 backdrop-blur-xl transition-all hover:border-[#FFD95A]/70"
           >
             ✨ Shaelix — Learn without losing focus
           </Link>
 
-          <h1 className="mt-8 max-w-3xl text-5xl font-black leading-tight drop-shadow-2xl md:text-7xl">
+          <h1 className="mt-10 text-6xl font-black leading-tight drop-shadow-2xl xl:text-7xl">
             Turn videos into{" "}
-            <span className="bg-gradient-to-r from-[#B388FF] via-[#FF5DA2] to-[#FFD95A] bg-clip-text text-transparent animate-[gradientText_6s_ease-in-out_infinite]">
+            <span className="bg-gradient-to-r from-[#B388FF] via-[#FF5DA2] to-[#FFD95A] bg-clip-text text-transparent">
               structured learning.
             </span>
           </h1>
 
-          <p className="mt-6 max-w-2xl text-lg leading-8 text-white/85 drop-shadow-lg">
+          <p className="mt-8 max-w-2xl text-lg leading-8 text-white/90 drop-shadow-lg">
             Shaelix converts educational YouTube videos into smart notes,
-            clickable timestamps, flashcards, quizzes, mind maps, and video-aware
-            chat — all inside one focused AI learning workspace.
+            clickable timestamps, flashcards, quizzes, mind maps, and
+            video-aware chat — all inside one focused AI learning workspace.
           </p>
 
-          <div className="mt-8 grid max-w-2xl gap-4 sm:grid-cols-2">
-            <div className="group rounded-3xl border border-white/20 bg-white/[0.09] p-6 shadow-xl shadow-black/30 backdrop-blur-2xl transition-all duration-500 hover:-translate-y-2 hover:border-[#B388FF]/70 hover:bg-white/[0.14]">
-              <p className="text-3xl transition-transform duration-500 group-hover:scale-125">
-                🎥
-              </p>
-              <h3 className="mt-4 text-lg font-bold">Video Intelligence</h3>
-              <p className="mt-2 text-sm leading-6 text-white/70">
+          <div className="mt-9 flex flex-wrap gap-6">
+            <div className="w-[310px] rounded-3xl border border-white/20 bg-black/25 p-7 shadow-xl shadow-black/30 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-[#B388FF]/70">
+              <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#B388FF]/20 text-2xl">
+                🤖
+              </div>
+
+              <h3 className="text-xl font-black">Video Intelligence</h3>
+
+              <p className="mt-3 text-sm leading-6 text-white/75">
                 Extract meaningful notes from long videos without manually
                 typing while watching.
               </p>
             </div>
 
-            <div className="group rounded-3xl border border-white/20 bg-white/[0.09] p-6 shadow-xl shadow-black/30 backdrop-blur-2xl transition-all duration-500 hover:-translate-y-2 hover:border-[#FF5DA2]/70 hover:bg-white/[0.14]">
-              <p className="text-3xl transition-transform duration-500 group-hover:scale-125">
+            <div className="w-[310px] rounded-3xl border border-white/20 bg-black/25 p-7 shadow-xl shadow-black/30 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-[#FF5DA2]/70">
+              <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#FF5DA2]/20 text-2xl">
                 🧠
-              </p>
-              <h3 className="mt-4 text-lg font-bold">Active Revision</h3>
-              <p className="mt-2 text-sm leading-6 text-white/70">
+              </div>
+
+              <h3 className="text-xl font-black">Active Revision</h3>
+
+              <p className="mt-3 text-sm leading-6 text-white/75">
                 Practice with AI flashcards, quizzes, mind maps, and chat with
                 the video content.
               </p>
             </div>
           </div>
 
-          <div className="mt-8 flex flex-wrap gap-3 text-sm text-white/85">
-            {["Timestamped notes", "Chat with video", "Export PDF"].map(
-              (item) => (
-                <span
-                  key={item}
-                  className="rounded-full border border-white/20 bg-white/[0.10] px-4 py-2 backdrop-blur-2xl transition-all duration-300 hover:-translate-y-1 hover:border-[#FFD95A]/70 hover:bg-white/[0.16]"
-                >
-                  {item}
-                </span>
-              )
-            )}
+          <div className="mt-8 flex flex-wrap gap-5 text-sm font-semibold text-white/90">
+            <span className="rounded-2xl border border-white/20 bg-black/25 px-6 py-3 backdrop-blur-xl">
+              ◷ Timestamped notes
+            </span>
+
+            <span className="rounded-2xl border border-white/20 bg-black/25 px-6 py-3 backdrop-blur-xl">
+              💬 Chat with video
+            </span>
+
+            <span className="rounded-2xl border border-white/20 bg-black/25 px-6 py-3 backdrop-blur-xl">
+              📄 Export PDF
+            </span>
+          </div>
+
+          <div className="mt-10 grid max-w-2xl gap-5 sm:grid-cols-3">
+            <div className="flex items-center gap-3 text-sm text-white/85">
+              <span className="text-2xl text-green-300">🛡</span>
+              <p>
+                <b>Trusted</b>
+                <br />
+                by learners
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3 text-sm text-white/85">
+              <span className="text-2xl text-[#FFD95A]">⚡</span>
+              <p>
+                <b>Save hours</b>
+                <br />
+                of study time
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3 text-sm text-white/85">
+              <span className="text-2xl text-[#FFD95A]">🔒</span>
+              <p>
+                <b>Your data</b>
+                <br />
+                stays safe
+              </p>
+            </div>
           </div>
         </section>
 
-        <section className="mx-auto w-full max-w-xl animate-[fadeSlideUp_1100ms_ease-out]">
+        <section className="mx-auto w-full max-w-2xl">
           <form
             onSubmit={handleSubmit}
-            className="relative overflow-hidden rounded-[2.5rem] border border-white/25 bg-white/[0.12] p-10 shadow-2xl shadow-black/60 backdrop-blur-3xl transition-all duration-500 hover:border-white/40 hover:bg-white/[0.15]"
+            className="relative overflow-hidden rounded-[2.5rem] border border-white/25 bg-black/40 p-12 shadow-2xl shadow-black/70 backdrop-blur-2xl"
           >
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/12 via-transparent to-white/5" />
-            <div className="pointer-events-none absolute -right-24 -top-24 h-56 w-56 rounded-full bg-[#FF5DA2]/20 blur-3xl animate-[floatGlow_9s_ease-in-out_infinite]" />
-            <div className="pointer-events-none absolute -bottom-24 -left-24 h-56 w-56 rounded-full bg-[#B388FF]/20 blur-3xl animate-[floatGlow_11s_ease-in-out_infinite]" />
+            <div className="pointer-events-none absolute inset-0 rounded-[2.5rem] bg-gradient-to-br from-white/10 via-transparent to-[#FFD95A]/10" />
+            <div className="pointer-events-none absolute inset-0 rounded-[2.5rem] border border-[#B388FF]/40 shadow-[0_0_45px_rgba(179,136,255,0.22),0_0_55px_rgba(255,217,90,0.16)]" />
 
             <div className="relative">
-              <div className="mb-8">
-                <p className="text-sm font-semibold uppercase tracking-[0.35em] text-[#FFD95A]">
-                  Start free
-                </p>
+              <p className="text-sm font-bold uppercase tracking-[0.45em] text-[#FFD95A]">
+                Start free
+              </p>
 
-                <h2 className="mt-3 text-5xl font-black bg-gradient-to-r from-[#B388FF] via-[#FF5DA2] to-[#FFD95A] bg-clip-text text-transparent">
-                  Create Account
-                </h2>
+              <h2 className="mt-4 text-5xl font-black bg-gradient-to-r from-[#B388FF] via-[#FF5DA2] to-[#FFD95A] bg-clip-text text-transparent">
+                Create Account
+              </h2>
 
-                <p className="mt-3 text-white/70">
-                  Build your personal AI learning library.
-                </p>
-              </div>
+              <p className="mt-4 text-lg text-white/80">
+                Build your personal AI learning library.
+              </p>
 
-              <label className="text-sm text-white/85">Full Name</label>
+              <div className="my-8 h-px w-full bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+
+              <label className="text-sm font-semibold text-white/90">
+                Full Name
+              </label>
+
               <input
                 type="text"
                 name="name"
                 placeholder="Enter your name"
                 value={formData.name}
                 onChange={handleChange}
-                className="mt-2 w-full rounded-2xl border border-white/20 bg-black/30 px-5 py-4 text-white placeholder:text-white/45 outline-none backdrop-blur-xl transition-all duration-300 focus:border-[#B388FF] focus:bg-black/45 focus:shadow-lg focus:shadow-[#B388FF]/20"
+                className="mt-3 w-full rounded-2xl border border-white/25 bg-black/35 px-6 py-5 text-lg text-white placeholder:text-white/45 outline-none backdrop-blur-xl transition-all focus:border-[#B388FF] focus:shadow-[0_0_25px_rgba(179,136,255,0.35)]"
               />
 
-              <label className="mt-5 block text-sm text-white/85">Email</label>
+              <label className="mt-6 block text-sm font-semibold text-white/90">
+                Email
+              </label>
+
               <input
                 type="email"
                 name="email"
                 placeholder="you@example.com"
                 value={formData.email}
                 onChange={handleChange}
-                className="mt-2 w-full rounded-2xl border border-white/20 bg-black/30 px-5 py-4 text-white placeholder:text-white/45 outline-none backdrop-blur-xl transition-all duration-300 focus:border-[#FF5DA2] focus:bg-black/45 focus:shadow-lg focus:shadow-[#FF5DA2]/20"
+                className="mt-3 w-full rounded-2xl border border-white/25 bg-black/35 px-6 py-5 text-lg text-white placeholder:text-white/45 outline-none backdrop-blur-xl transition-all focus:border-[#FF5DA2] focus:shadow-[0_0_25px_rgba(255,93,162,0.35)]"
               />
 
-              <label className="mt-5 block text-sm text-white/85">
+              <label className="mt-6 block text-sm font-semibold text-white/90">
                 Password
               </label>
+
               <input
                 type="password"
                 name="password"
                 placeholder="Create a password"
                 value={formData.password}
                 onChange={handleChange}
-                className="mt-2 w-full rounded-2xl border border-white/20 bg-black/30 px-5 py-4 text-white placeholder:text-white/45 outline-none backdrop-blur-xl transition-all duration-300 focus:border-[#FFD95A] focus:bg-black/45 focus:shadow-lg focus:shadow-[#FFD95A]/20"
+                className="mt-3 w-full rounded-2xl border border-white/25 bg-black/35 px-6 py-5 text-lg text-white placeholder:text-white/45 outline-none backdrop-blur-xl transition-all focus:border-[#FFD95A] focus:shadow-[0_0_25px_rgba(255,217,90,0.35)]"
               />
 
               <button
                 disabled={loading}
-                className="mt-7 w-full rounded-2xl bg-gradient-to-r from-[#B388FF] via-[#FF5DA2] to-[#FFD95A] bg-[length:200%_200%] px-5 py-4 font-black text-black shadow-lg shadow-pink-500/30 transition-all duration-500 hover:scale-[1.03] hover:bg-right disabled:opacity-60"
+                className="mt-8 flex w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-[#B388FF] via-[#FF5DA2] to-[#FFD95A] px-6 py-5 text-lg font-black text-black shadow-lg shadow-pink-500/30 transition-all duration-300 hover:scale-[1.02] disabled:opacity-60"
               >
                 {loading ? "Creating Account..." : "Create Shaelix Account"}
+                <span>→</span>
               </button>
 
               {message && (
@@ -192,12 +227,20 @@ function Register() {
                 </p>
               )}
 
-              <p className="mt-6 text-center text-sm text-white/70">
+              <p className="mt-7 text-center text-sm text-white/75">
                 Already have an account?{" "}
-                <Link to="/login" className="font-semibold text-[#FFD95A]">
+                <Link to="/login" className="font-bold text-[#FFD95A]">
                   Login
                 </Link>
               </p>
+
+              <div className="mt-8 flex items-center gap-4">
+                <div className="h-px flex-1 bg-white/20" />
+                <p className="text-xs font-bold uppercase tracking-[0.25em] text-white/60">
+                  Secure AI workspace
+                </p>
+                <div className="h-px flex-1 bg-white/20" />
+              </div>
             </div>
           </form>
         </section>

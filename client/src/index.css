@@ -193,3 +193,103 @@
   }
 }
 
+@keyframes loginDrift {
+  0% {
+    transform: scale(1.05) translate3d(0, 0, 0);
+  }
+
+  100% {
+    transform: scale(1.14) translate3d(-24px, -18px, 0);
+  }
+}
+
+@keyframes softFloat {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-12px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes homeDrift {
+  0% {
+    transform: scale(1.05) translate3d(0, 0, 0);
+  }
+
+  100% {
+    transform: scale(1.14) translate3d(-24px, -18px, 0);
+  }
+}
+
+@keyframes softFloat {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-12px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes floatGlow {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.55;
+  }
+
+  50% {
+    transform: translate3d(22px, -26px, 0) scale(1.16);
+    opacity: 0.9;
+  }
+
+  100% {
+    transform: translate3d(-18px, 20px, 0) scale(0.95);
+    opacity: 0.6;
+  }
+}
+
+@keyframes shine {
+  0% {
+    transform: translateX(-120px) rotate(12deg);
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateX(900px) rotate(12deg);
+    opacity: 0;
+  }
+}
+
+@keyframes dashboardDrift {
+  0% {
+    transform: scale(1.05) translate3d(0, 0, 0);
+  }
+
+  100% {
+    transform: scale(1.15) translate3d(-24px, -18px, 0);
+  }
+}
+
+@keyframes historyDrift {
+  0% {
+    transform: scale(1.05) translate3d(0, 0, 0);
+  }
+
+  100% {
+    transform: scale(1.14) translate3d(-24px, -18px, 0);
+  }
+}
