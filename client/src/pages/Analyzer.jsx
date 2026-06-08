@@ -1,7 +1,10 @@
 import { useState } from "react"
 import API from "../utils/api"
+import { useNavigate } from "react-router-dom"
+import analyzerBg from "../assets/9.jpg"
 
 function Analyzer() {
+  const navigate = useNavigate()
   const [videoUrl, setVideoUrl] = useState("")
   const [analysisId, setAnalysisId] = useState("")
   const [notes, setNotes] = useState("")
@@ -179,7 +182,7 @@ function Analyzer() {
     }
 
     return (
-      <div className="space-y-4">
+      <div className="flex flex-col gap-5">
         {lines.map((line, index) => {
           const isMain = line.toLowerCase().includes("main topic")
           const isBranch = line.toLowerCase().includes("branch")
@@ -192,9 +195,9 @@ function Analyzer() {
                 isMain
                   ? "border-[#FFD95A] bg-[#FFD95A]/10 text-[#FFD95A]"
                   : isBranch
-                  ? "ml-6 border-[#FF5DA2] bg-[#FF5DA2]/10 text-[#FF9AC7]"
+                  ? "ml-16 border-[#FF5DA2] bg-[#FF5DA2]/10 text-[#FF9AC7]"
                   : isDetail
-                  ? "ml-12 border-[#B388FF] bg-[#B388FF]/10 text-gray-300"
+                  ? "ml-32 border-[#B388FF] bg-[#B388FF]/10 text-gray-300"
                   : "border-white/10 bg-black/20 text-gray-300"
               }`}
             >
@@ -217,12 +220,45 @@ function Analyzer() {
   ]
 
   return (
-    <div className="min-h-screen bg-[#0F0F14] text-white px-8 py-6">
-      <h1 className="text-4xl font-bold mb-8 bg-gradient-to-r from-[#B388FF] via-[#FF5DA2] to-[#FFD95A] bg-clip-text text-transparent">
-        Shaelix Analyzer
-      </h1>
+    <div className="relative min-h-screen overflow-hidden text-white">
+  <div
+    className="fixed inset-0 scale-110 bg-cover bg-center animate-[analyzerDrift_35s_ease-in-out_infinite_alternate]"
+    style={{ backgroundImage: `url(${analyzerBg})` }}
+  />
 
-      <form onSubmit={handleAnalyze} className="flex flex-col gap-4 max-w-3xl">
+  <div className="absolute left-8 top-8 z-30">
+  <button
+    onClick={() => navigate("/dashboard")}
+    className="group flex items-center gap-3 rounded-2xl border border-[#B388FF]/40 bg-black/55 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-black/50 backdrop-blur-2xl transition-all duration-300 hover:-translate-y-1 hover:border-[#FFD95A] hover:bg-black/75"
+  >
+    <span className="text-[#FFD95A] transition-transform duration-300 group-hover:-translate-x-1">
+      ←
+    </span>
+    <span className="bg-gradient-to-r from-[#B388FF] via-[#FF5DA2] to-[#FFD95A] bg-clip-text text-transparent">
+      Return to Dashboard
+    </span>
+  </button>
+</div>
+
+  <div className="fixed inset-0 bg-black/70" />
+  <div className="fixed inset-0 bg-gradient-to-b from-black/70 via-[#04110D]/50 to-black/80" />
+
+  <div className="relative z-10 px-8 py-6">
+      <section className="mx-auto flex min-h-[70vh] max-w-5xl flex-col items-center justify-center text-center">
+  <p className="mb-5 rounded-full border border-white/15 bg-black/35 px-5 py-2 text-sm text-white/70 backdrop-blur-xl">
+    🎥 AI Video Learning Engine
+  </p>
+
+  <h1 className="text-6xl font-black leading-tight md:text-8xl bg-gradient-to-r from-[#B388FF] via-[#FF5DA2] to-[#FFD95A] bg-clip-text text-transparent">
+    Analyze any video.
+  </h1>
+
+  <p className="mt-6 max-w-2xl text-lg leading-8 text-white/65">
+    Paste a YouTube link and Shaelix will build notes, timestamps,
+    flashcards, quizzes, mind maps, and chat from the video.
+  </p>
+
+  <form onSubmit={handleAnalyze} className="mt-10 flex w-full max-w-3xl flex-col gap-4">
         <input
           type="text"
           placeholder="Paste YouTube URL..."
@@ -239,6 +275,7 @@ function Analyzer() {
           {loading ? "Analyzing Video..." : "Analyze Video"}
         </button>
       </form>
+      </section>
 
       {loading && (
         <div className="mt-8 rounded-3xl border border-white/10 bg-white/[0.04] p-6 text-gray-300">
@@ -250,7 +287,7 @@ function Analyzer() {
 
       {notes && (
         <>
-          <div className="mt-10 flex flex-wrap gap-3 rounded-3xl border border-white/10 bg-white/[0.04] p-3">
+          <div className="mt-10 flex flex-wrap gap-3 rounded-full border border-white/10 bg-black/35 p-3 backdrop-blur-xl">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
@@ -305,9 +342,21 @@ function Analyzer() {
                 </button>
               </div>
 
-              <pre className="whitespace-pre-wrap text-gray-300">
-                {cleanNotes}
-              </pre>
+              <div className="space-y-6">
+  {cleanNotes
+    .split("\n")
+    .filter((line) => line.trim())
+    .map((line, index) => (
+      <div
+        key={index}
+        className="rounded-2xl border border-white/10 bg-black/25 p-5 backdrop-blur-xl"
+      >
+        <p className="leading-8 text-gray-200">
+          {line}
+        </p>
+      </div>
+    ))}
+</div>
             </div>
           )}
 
@@ -325,7 +374,19 @@ function Analyzer() {
                       href={`https://www.youtube.com/watch?v=${videoId}&t=${item.time}s`}
                       target="_blank"
                       rel="noreferrer"
-                      className="block rounded-xl border border-white/10 bg-black/20 p-4 transition-all hover:border-[#FFD95A]"
+                      className="
+group
+block
+rounded-2xl
+border-l-4
+border-[#FFD95A]
+bg-black/25
+p-5
+backdrop-blur-xl
+transition-all
+hover:translate-x-2
+hover:border-[#FFD95A]
+"
                     >
                       <span className="font-bold text-[#FFD95A]">
                         {item.displayTime}
@@ -355,7 +416,21 @@ function Analyzer() {
                       onClick={() =>
                         setOpenCard(openCard === index ? null : index)
                       }
-                      className="cursor-pointer rounded-2xl border border-white/10 bg-black/20 p-6 hover:border-[#FF5DA2]"
+                      className="
+cursor-pointer
+h-64
+rounded-3xl
+border border-[#FF5DA2]/20
+bg-gradient-to-br
+from-[#FF5DA2]/10
+to-black/40
+p-6
+backdrop-blur-xl
+transition-all
+duration-500
+hover:scale-105
+hover:border-[#FF5DA2]
+"
                     >
                       <p className="font-bold text-[#FFD95A]">
                         Q: {card.question}
@@ -404,7 +479,15 @@ function Analyzer() {
                     return (
                       <div
                         key={quizIndex}
-                        className="rounded-2xl border border-white/10 bg-black/20 p-6"
+                        className="
+rounded-3xl
+border border-white/10
+bg-black/35
+p-8
+backdrop-blur-xl
+shadow-xl
+shadow-black/30
+"
                       >
                         <p className="font-bold text-white">
                           Q{quizIndex + 1}. {quiz.question}
@@ -499,6 +582,7 @@ function Analyzer() {
           )}
         </>
       )}
+    </div>
     </div>
   )
 }
