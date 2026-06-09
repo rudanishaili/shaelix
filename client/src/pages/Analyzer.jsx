@@ -328,79 +328,148 @@ function Analyzer() {
           )}
 
           {activeTab === "notes" && (
-            <div className="mt-8 rounded-3xl border border-white/10 bg-white/[0.04] p-6">
-              <div className="mb-5 flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-[#B388FF]">
-                  Generated Notes
-                </h2>
-
-                <button
-                  onClick={copyNotes}
-                  className="rounded-xl border border-white/10 px-4 py-2 text-sm text-[#B388FF] hover:border-[#B388FF]"
-                >
-                  Copy Notes
-                </button>
-              </div>
-
-              <div className="space-y-6">
-  {cleanNotes
-    .split("\n")
-    .filter((line) => line.trim())
-    .map((line, index) => (
-      <div
-        key={index}
-        className="rounded-2xl border border-white/10 bg-black/25 p-5 backdrop-blur-xl"
-      >
-        <p className="leading-8 text-gray-200">
-          {line}
+  <div className="mt-8 rounded-[2rem] border border-white/15 bg-black/60 p-8 shadow-2xl shadow-black/60 backdrop-blur-2xl">
+    <div className="mb-8 flex items-center justify-between">
+      <div>
+        <p className="text-sm uppercase tracking-[0.35em] text-[#FFD95A]">
+          Study Notes
         </p>
+        <h2 className="mt-2 text-3xl font-black text-white">
+          Generated Learning Notes
+        </h2>
       </div>
-    ))}
-</div>
+
+      <button
+        onClick={copyNotes}
+        className="rounded-2xl border border-[#B388FF]/40 bg-[#B388FF]/10 px-5 py-3 text-sm font-bold text-[#B388FF] transition-all hover:border-[#B388FF]"
+      >
+        Copy Notes
+      </button>
+    </div>
+
+    <div className="space-y-5">
+      {cleanNotes
+        .split("\n")
+        .filter((line) => line.trim())
+        .map((line, index) => {
+          const cleanLine = line
+            .replaceAll("##", "")
+            .replaceAll("**", "")
+            .replace(/^- /, "")
+            .trim()
+
+          const isHeading =
+            line.includes("##") ||
+            cleanLine.toLowerCase().includes("key concepts") ||
+            cleanLine.toLowerCase().includes("important points") ||
+            cleanLine.toLowerCase().includes("revision notes") ||
+            cleanLine.toLowerCase().includes("interview questions")
+
+          const isQuestion = cleanLine.startsWith("Q:")
+          const isAnswer = cleanLine.startsWith("A:")
+
+          if (isHeading) {
+            return (
+              <div key={index} className="pt-4">
+                <h3 className="rounded-2xl border border-[#FFD95A]/30 bg-[#FFD95A]/10 px-5 py-4 text-xl font-black text-[#FFD95A]">
+                  {cleanLine}
+                </h3>
+              </div>
+            )
+          }
+
+          if (isQuestion) {
+            return (
+              <div
+                key={index}
+                className="rounded-2xl border border-[#B388FF]/30 bg-[#B388FF]/10 p-5"
+              >
+                <p className="font-bold leading-8 text-white">
+                  {cleanLine}
+                </p>
+              </div>
+            )
+          }
+
+          if (isAnswer) {
+            return (
+              <div
+                key={index}
+                className="ml-6 rounded-2xl border border-[#FF5DA2]/25 bg-[#FF5DA2]/10 p-5"
+              >
+                <p className="leading-8 text-white/85">
+                  {cleanLine}
+                </p>
+              </div>
+            )
+          }
+
+          return (
+            <div
+              key={index}
+              className="rounded-2xl border border-white/10 bg-white/[0.07] p-5 transition-all duration-300 hover:border-[#B388FF]/50"
+            >
+              <p className="leading-8 text-white/85">
+                <span className="mr-3 text-[#FFD95A]">•</span>
+                {cleanLine}
+              </p>
             </div>
-          )}
+          )
+        })}
+    </div>
+  </div>
+)}
 
           {activeTab === "timestamps" && (
-            <div className="mt-8 rounded-3xl border border-white/10 bg-white/[0.04] p-6">
-              <h2 className="mb-5 text-2xl font-bold text-[#B388FF]">
-                Timestamps
-              </h2>
+  <div className="mt-8 rounded-[2rem] border border-white/15 bg-black/60 p-8 shadow-2xl shadow-black/60 backdrop-blur-2xl">
+    <div className="mb-8">
+      <p className="text-sm uppercase tracking-[0.35em] text-[#FFD95A]">
+        Video Timeline
+      </p>
 
-              <div className="grid gap-3">
-                {timestamps.length > 0 ? (
-                  timestamps.map((item) => (
-                    <a
-                      key={item._id}
-                      href={`https://www.youtube.com/watch?v=${videoId}&t=${item.time}s`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="
-group
-block
-rounded-2xl
-border-l-4
-border-[#FFD95A]
-bg-black/25
-p-5
-backdrop-blur-xl
-transition-all
-hover:translate-x-2
-hover:border-[#FFD95A]
-"
-                    >
-                      <span className="font-bold text-[#FFD95A]">
-                        {item.displayTime}
-                      </span>
+      <h2 className="mt-2 text-3xl font-black text-white">
+        Clickable Timestamps
+      </h2>
+    </div>
 
-                      <p className="mt-2 text-gray-300">{item.text}</p>
-                    </a>
-                  ))
-                ) : (
-                  <p className="text-gray-400">No timestamps available.</p>
-                )}
-              </div>
+    <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+      {timestamps.length > 0 ? (
+        timestamps.map((item) => (
+          <a
+            key={item._id}
+            href={`https://www.youtube.com/watch?v=${videoId}&t=${item.time}s`}
+            target="_blank"
+            rel="noreferrer"
+            className="group relative min-h-[150px] overflow-hidden rounded-3xl border border-white/10 bg-black/45 p-6 backdrop-blur-xl transition-all duration-300 hover:-translate-y-2 hover:border-[#FFD95A]/70"
+          >
+            {/* Top Left */}
+<div className="absolute left-2 top-2">
+  <div className="h-8 w-8 rounded-tl-2xl border-l-[3px] border-t-[3px] border-[#FFD95A]" />
+</div>
+
+{/* Bottom Right */}
+<div className="absolute bottom-4 right-4">
+  <div className="h-8 w-8 rounded-br-2xl border-b-[3px] border-r-[3px] border-[#FFD95A]" />
+</div>
+            <div className="mb-4 inline-flex rounded-full border border-[#FFD95A]/30 bg-[#FFD95A]/10 px-4 py-2 text-sm font-black text-[#FFD95A]">
+              {item.displayTime}
             </div>
-          )}
+
+            <p className="line-clamp-3 leading-7 text-white/80">
+              {item.text}
+            </p>
+
+            <p className="mt-5 text-sm font-bold text-[#B388FF] opacity-0 transition-all duration-300 group-hover:opacity-100">
+              Open at this moment →
+            </p>
+          </a>
+        ))
+      ) : (
+        <p className="text-white/50">No timestamps available.</p>
+      )}
+    </div>
+  </div>
+)}
 
           {activeTab === "flashcards" && (
             <div className="mt-8 rounded-3xl border border-white/10 bg-white/[0.04] p-6">
