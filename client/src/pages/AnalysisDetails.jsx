@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import jsPDF from "jspdf"
 import API from "../utils/api"
-import detailsBg from "../assets/4.jpg"
+import detailsBg from "../assets/10.jpg"
 
 function AnalysisDetails() {
   const { id } = useParams()
