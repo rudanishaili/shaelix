@@ -22,6 +22,8 @@ export const getTranscript = async (req, res) => {
       return res.status(400).json({ message: "Video URL is required" })
     }
 
+    console.log("Incoming URL:", videoUrl)
+
     const transcriptArray = await YoutubeTranscript.fetchTranscript(videoUrl)
 
     const cleanTranscript = transcriptArray
