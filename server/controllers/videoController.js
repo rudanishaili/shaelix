@@ -1,4 +1,4 @@
-import { YoutubeTranscript } from "youtube-transcript"
+import axios from "axios"
 import { generateNotes } from "../utils/openrouter.js"
 import { askVideoQuestion } from "../utils/chatWithVideo.js"
 import Analysis from "../models/Analysis.js"
@@ -24,23 +24,38 @@ export const getTranscript = async (req, res) => {
 
     console.log("Incoming URL:", videoUrl)
 
-    const transcriptArray = await YoutubeTranscript.fetchTranscript(videoUrl)
+    const axios = (await import("axios")).default
 
-    const cleanTranscript = transcriptArray
-      .map((item) => item.text)
-      .join(" ")
-      .replace(/\s+/g, " ")
-      .trim()
+const response = await axios.get(
+  "https://api.supadata.ai/v1/transcript",
+  {
+    params: {
+      url: videoUrl,
+      mode: "auto",
+    },
+    headers: {
+      "x-api-key": process.env.SUPADATA_API_KEY,
+    },
+  }
+)
 
-    const timestamps = transcriptArray
-      .filter((item, index) => index % 12 === 0)
-      .map((item) => ({
-        time: Math.floor(item.offset / 1000),
-        displayTime: formatTime(item.offset / 1000),
-        text: item.text,
-      }))
-      .slice(0, 12)
+const transcriptArray = response.data.content
 
+const cleanTranscript = transcriptArray
+  .map((item) => item.text)
+  .join(" ")
+  .replace(/\s+/g, " ")
+  .trim()
+
+const timestamps = transcriptArray
+  .filter((item, index) => index % 12 === 0)
+  .map((item) => ({
+    time: Math.floor(item.offset / 1000),
+    displayTime: formatTime(item.offset / 1000),
+    text: item.text,
+  }))
+  .slice(0, 12)
+  
     const notes = await generateNotes(cleanTranscript)
 
     const savedAnalysis = await Analysis.create({
